@@ -166,6 +166,26 @@ const formattedDate = new Intl.DateTimeFormat('ja-JP', {
     border-radius: 8px;
     overflow-x: auto;
     margin: 0 0 24px 0;
+    position: relative;
+  }
+
+  .post-content :global(pre[data-filename]) {
+    padding-top: 40px;
+  }
+
+  .post-content :global(pre[data-filename])::before {
+    content: attr(data-filename);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 16px;
+    background: #3d3d3d;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .post-content :global(pre code) {
