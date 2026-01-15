@@ -1,0 +1,39 @@
+---
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<div class="tweet-embed">
+  <blockquote class="twitter-tweet" data-dnt="true">
+    <a href={`https://twitter.com/x/status/${id}`}>Loading tweet...</a>
+  </blockquote>
+</div>
+
+<script is:inline>
+  (function() {
+    if (window.twttr) {
+      window.twttr.widgets.load();
+    } else if (!document.getElementById('twitter-wjs')) {
+      const script = document.createElement('script');
+      script.id = 'twitter-wjs';
+      script.src = 'https://platform.twitter.com/widgets.js';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  })();
+</script>
+
+<style>
+  .tweet-embed {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+  }
+
+  .twitter-tweet {
+    margin: 0 !important;
+  }
+</style>
