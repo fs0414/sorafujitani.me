@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BlogLayout from '../../layouts/BlogLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -16,7 +17,12 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
+
+const siteUrl = Astro.site || 'https://sorafujitani.me';
+const postUrl = new URL(`/blog/${post.slug}`, siteUrl).toString();
+const encodedUrl = encodeURIComponent(postUrl);
+const encodedTitle = encodeURIComponent(post.data.title);
 
 const formattedDate = new Intl.DateTimeFormat('ja-JP', {
   year: 'numeric',
@@ -43,11 +49,74 @@ const formattedDate = new Intl.DateTimeFormat('ja-JP', {
         </div>
       )}
     </header>
+    <TableOfContents headings={headings} />
     <div class="post-content">
       <Content />
     </div>
+
+    <footer class="post-footer">
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <a
+          href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="share-button share-x"
+          aria-label="Share on X"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="share-button share-facebook"
+          aria-label="Share on Facebook"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a
+          href={`https://b.hatena.ne.jp/entry/${postUrl}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="share-button share-hatena"
+          aria-label="Share on Hatena Bookmark"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M20.47 0C22.42 0 24 1.58 24 3.53v16.94c0 1.95-1.58 3.53-3.53 3.53H3.53C1.58 24 0 22.42 0 20.47V3.53C0 1.58 1.58 0 3.53 0h16.94zM8.61 17.67c0-.67-.53-1.2-1.2-1.2-.67 0-1.2.53-1.2 1.2 0 .67.53 1.2 1.2 1.2.67 0 1.2-.53 1.2-1.2zm-.86-3.53H5.61v-8.4h2.14c1.67 0 2.4.93 2.4 2.13 0 .93-.53 1.6-1.33 1.87.93.27 1.47 1.07 1.47 2 0 1.33-.93 2.4-2.54 2.4zm7.07 0c2.27 0 3.6-1.47 3.6-3.73v-.67c0-2.27-1.33-3.73-3.6-3.73h-2.8v8.13h2.8z"/>
+          </svg>
+        </a>
+        <button
+          class="share-button share-copy"
+          aria-label="Copy link"
+          data-url={postUrl}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+      </div>
+    </footer>
   </article>
 </BlogLayout>
+
+<script>
+  document.querySelectorAll('.share-copy').forEach(button => {
+    button.addEventListener('click', async () => {
+      const url = button.getAttribute('data-url');
+      if (url) {
+        await navigator.clipboard.writeText(url);
+        button.classList.add('copied');
+        setTimeout(() => button.classList.remove('copied'), 2000);
+      }
+    });
+  });
+</script>
 
 <style>
   .blog-post {
@@ -280,6 +349,48 @@ const formattedDate = new Intl.DateTimeFormat('ja-JP', {
     border: none;
     border-top: 1px solid var(--color-border);
     margin: 48px 0;
+  }
+
+  .post-footer {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .share-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .share-label {
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+
+  .share-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--color-tag-bg);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .share-button:hover {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .share-copy.copied {
+    background: #22c55e;
+    color: white;
   }
 
   @media (max-width: 768px) {
