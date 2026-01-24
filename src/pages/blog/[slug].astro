@@ -31,7 +31,7 @@ const formattedDate = new Intl.DateTimeFormat('ja-JP', {
 }).format(post.data.pubDate);
 ---
 
-<BlogLayout title={post.data.title} description={post.data.description}>
+<BlogLayout title={post.data.title} description={post.data.description} image={`/og/${post.slug}.png`}>
   <article class="blog-post">
     <header class="post-header">
       <a href="/blog" class="back-link">← Blog</a>
