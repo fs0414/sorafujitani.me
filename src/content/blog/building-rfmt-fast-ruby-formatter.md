@@ -62,6 +62,12 @@ rfmt is approximately 6x faster.
 
 Typical formatting completes in 100-350ms. For larger Rails repositories, it finishes in about 500ms.
 
+## Links
+
+- GitHub: https://github.com/fs0414/rfmt
+- RubyGems: https://rubygems.org/gems/rfmt
+- DeepWiki: https://deepwiki.com/fs0414/rfmt
+
 ## Installation
 
 ```bash
@@ -143,8 +149,3 @@ I plan to continue development, fixing bugs and adding features.
 
 Please feel free to contribute!
 
-## Links
-
-- GitHub: https://github.com/fs0414/rfmt
-- RubyGems: https://rubygems.org/gems/rfmt
-- DeepWiki: https://deepwiki.com/fs0414/rfmt
