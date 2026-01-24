@@ -360,6 +360,41 @@ const formattedUpdatedDate = post.data.updatedDate ? formatDate(post.data.update
     margin: 48px 0;
   }
 
+  .post-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .post-content :global(th),
+  .post-content :global(td) {
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid var(--color-border);
+  }
+
+  .post-content :global(th) {
+    background: var(--color-tag-bg);
+    font-weight: 600;
+    color: var(--color-heading);
+    white-space: nowrap;
+  }
+
+  .post-content :global(td) {
+    background: var(--color-code-bg);
+  }
+
+  .post-content :global(tr:hover td) {
+    background: var(--color-tag-bg);
+  }
+
+  .post-content :global(td code) {
+    font-size: 0.9em;
+  }
+
   .post-footer {
     margin-top: 48px;
     padding-top: 32px;
