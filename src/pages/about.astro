@@ -1,0 +1,114 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+---
+
+<BlogLayout title="About" description="Sora Fujitaniについて">
+  <div class="about-container">
+    <section class="profile-section">
+      <img src="/profile.png" alt="Sora Fujitani" class="profile-image" />
+      <h1>Sora Fujitani</h1>
+    </section>
+
+    <section class="about-section">
+      <h2>About</h2>
+      <ul class="about-list">
+        <li>Software engineer at a Japanese SaaS company</li>
+        <li>Contributing to OSS development</li>
+        <li>Writing Rust, TypeScript, and Ruby</li>
+        <li>Fan of Karin., a singer-songwriter</li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2>Links</h2>
+      <div class="social-links">
+        <a href="https://x.com/_fs0414" target="_blank" rel="noopener noreferrer" class="social-link">
+          X
+        </a>
+        <a href="https://github.com/fs0414" target="_blank" rel="noopener noreferrer" class="social-link">
+          GitHub
+        </a>
+        <a href="https://zenn.dev/soramarjr" target="_blank" rel="noopener noreferrer" class="social-link">
+          Zenn
+        </a>
+        <a href="https://youtrust.jp/users/fs0414" target="_blank" rel="noopener noreferrer" class="social-link">
+          YOUTRUST
+        </a>
+      </div>
+    </section>
+  </div>
+</BlogLayout>
+
+<style>
+  .about-container {
+    max-width: 680px;
+  }
+
+  .profile-section {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 24px;
+  }
+
+  .profile-section h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-heading);
+  }
+
+  .about-section {
+    margin-bottom: 48px;
+  }
+
+  .about-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    color: var(--color-heading);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 8px;
+  }
+
+  .about-list {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin: 0;
+    padding-left: 20px;
+    list-style: disc;
+  }
+
+  .about-list li {
+    margin-bottom: 8px;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--color-tag-bg);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+
+  .social-link:hover {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+</style>

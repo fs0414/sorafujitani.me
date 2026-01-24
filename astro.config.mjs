@@ -45,24 +45,24 @@ export default defineConfig({
     remarkPlugins: [remarkGfm, remarkCodeFilename],
     shikiConfig: {
       theme: {
-        name: 'custom-cyan-theme',
+        name: 'custom-biome-theme',
         type: 'dark',
         colors: {
-          'editor.background': '#2d2d2d',
-          'editor.foreground': '#e8e6e3',
+          'editor.background': '#161b22',
+          'editor.foreground': '#e1e4e8',
         },
         tokenColors: [
           {
             scope: ['comment', 'punctuation.definition.comment'],
             settings: {
-              foreground: '#6b7280',
+              foreground: '#6e7681',
               fontStyle: 'italic',
             },
           },
           {
             scope: ['source.shell', 'text.shell'],
             settings: {
-              foreground: '#e8e6e3',
+              foreground: '#e1e4e8',
             },
           },
           {
@@ -74,57 +74,57 @@ export default defineConfig({
               'keyword.operator.new',
             ],
             settings: {
-              foreground: '#22d3ee',
+              foreground: '#00d8ff',
               fontStyle: 'bold',
             },
           },
           {
             scope: ['source.shell keyword', 'source.shell support.function'],
             settings: {
-              foreground: '#e8e6e3',
+              foreground: '#e1e4e8',
               fontStyle: 'normal',
             },
           },
           {
             scope: ['entity.name.function', 'support.function'],
             settings: {
-              foreground: '#60a5fa',
+              foreground: '#58a6ff',
             },
           },
           {
             scope: ['string', 'string.quoted'],
             settings: {
-              foreground: '#67e8f9',
+              foreground: '#7ee787',
             },
           },
           {
             scope: ['constant.numeric', 'constant.language'],
             settings: {
-              foreground: '#93c5fd',
+              foreground: '#79c0ff',
             },
           },
           {
             scope: ['variable', 'variable.other'],
             settings: {
-              foreground: '#e8e6e3',
+              foreground: '#e1e4e8',
             },
           },
           {
             scope: ['entity.name.type', 'entity.name.class', 'support.class'],
             settings: {
-              foreground: '#38bdf8',
+              foreground: '#00d8ff',
             },
           },
           {
             scope: ['punctuation', 'meta.brace'],
             settings: {
-              foreground: '#d1d5db',
+              foreground: '#c9d1d9',
             },
           },
           {
             scope: ['constant.other'],
             settings: {
-              foreground: '#bfdbfe',
+              foreground: '#79c0ff',
             },
           },
         ],

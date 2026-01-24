@@ -43,6 +43,7 @@ const ogImage = new URL(image, siteUrl);
         <a href="/" class="site-title">Sora Fujitani</a>
         <nav>
           <a href="/blog">Blog</a>
+          <a href="/about">About</a>
         </nav>
       </header>
       <main>
@@ -69,30 +70,30 @@ const ogImage = new URL(image, siteUrl);
 
 <style>
   :global(:root) {
-    /* Color Palette */
-    --color-bg: #1a1a1a;
-    --color-text: #e8e6e3;
-    --color-text-muted: #9ca3af;
-    --color-text-secondary: #d1d5db;
+    /* Color Palette - Biome Theme */
+    --color-bg: #181a1f;
+    --color-text: #e1e4e8;
+    --color-text-muted: #8b949e;
+    --color-text-secondary: #c9d1d9;
     --color-heading: #ffffff;
-    --color-border: #333;
-    --color-accent: #22d3ee;
-    --color-accent-hover: #67e8f9;
+    --color-border: #2d333b;
+    --color-accent: #00d8ff;
+    --color-accent-hover: #5ce6ff;
 
     /* Component Colors */
-    --color-tag-bg: #2a2a2a;
-    --color-code-bg: #2d2d2d;
-    --color-code-text: #f9fafb;
+    --color-tag-bg: #21262d;
+    --color-code-bg: #161b22;
+    --color-code-text: #e1e4e8;
 
     /* Syntax Highlighting Colors */
-    --syntax-keyword: #22d3ee;
-    --syntax-function: #60a5fa;
-    --syntax-string: #34d399;
-    --syntax-number: #fb923c;
-    --syntax-comment: #6b7280;
-    --syntax-operator: #e8e6e3;
-    --syntax-variable: #a78bfa;
-    --syntax-constant: #fbbf24;
+    --syntax-keyword: #00d8ff;
+    --syntax-function: #58a6ff;
+    --syntax-string: #7ee787;
+    --syntax-number: #79c0ff;
+    --syntax-comment: #6e7681;
+    --syntax-operator: #c9d1d9;
+    --syntax-variable: #e1e4e8;
+    --syntax-constant: #00d8ff;
   }
 
   :global(body) {
@@ -100,7 +101,11 @@ const ogImage = new URL(image, siteUrl);
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     color: var(--color-text);
-    background: var(--color-bg);
+    background:
+      radial-gradient(ellipse 80% 50% at 0% 0%, rgba(0, 136, 204, 0.15) 0%, transparent 50%),
+      linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
     line-height: 1.6;
   }
 
@@ -123,6 +128,11 @@ const ogImage = new URL(image, siteUrl);
     font-weight: 600;
     color: var(--color-accent);
     text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    gap: 20px;
   }
 
   nav a {

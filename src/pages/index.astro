@@ -17,9 +17,12 @@ const latestPosts = allPosts
         <img src="/profile.png" alt="Sora Fujitani" class="profile-icon" />
         <div class="profile-info">
           <h1>Sora Fujitani</h1>
-          <p class="bio">
-            自己紹介TBD
-          </p>
+          <ul class="bio">
+            <li>Software engineer at a Japanese SaaS company</li>
+            <li>Contributing to OSS development</li>
+            <li>Writing Rust, TypeScript, and Ruby</li>
+            <li>fan of Karin., a singer-songwriter</li>
+          </ul>
         </div>
       </div>
 
@@ -96,10 +99,16 @@ const latestPosts = allPosts
   }
 
   .bio {
-    font-size: 20px;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.8;
     color: var(--color-text-secondary);
     margin: 0;
+    padding-left: 20px;
+    list-style: disc;
+  }
+
+  .bio li {
+    margin-bottom: 4px;
   }
 
   .social-links {
