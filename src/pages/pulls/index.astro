@@ -1,6 +1,6 @@
 ---
 import BlogLayout from '@layouts/BlogLayout.astro';
-import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants';
+import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE, PULLS_OWN_REPOS } from '@lib/constants';
 ---
 
 <BlogLayout title="Pulls" description="GitHub Pull Requests by Sora Fujitani">
@@ -8,8 +8,10 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
     <h1>Pulls</h1>
     <p class="description">Public GitHub Pull Requests. <span class="since">from 2025-10</span></p>
 
+    <div id="repos-filter" class="repos-filter" style="display:none;"></div>
+
     <div id="pulls-loading" class="skeleton-list">
-      {Array.from({ length: 5 }).map(() => (
+      {Array.from({ length: 3 }).map(() => (
         <div class="skeleton-card">
           <div class="skeleton-header">
             <div class="skeleton-avatar" />
@@ -32,11 +34,18 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
   </div>
 </BlogLayout>
 
-<script define:vars={{ GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE }}>
+<script define:vars={{ GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE, PULLS_OWN_REPOS }}>
   const PER_PAGE = 16;
-  const BASE_URL = `https://api.github.com/search/issues?q=type:pr+author:${GITHUB_USERNAME}+is:public+created:>=${PULLS_SINCE}&sort=created&order=desc&per_page=${PER_PAGE}`;
+  const BASE_QUERY = `type:pr+author:${GITHUB_USERNAME}+is:public+created:>=${PULLS_SINCE}`;
   let currentPage = 1;
   let totalPages = 1;
+  let activeRepo = null;
+
+  function buildUrl(page) {
+    let q = BASE_QUERY;
+    if (activeRepo) q += `+repo:${activeRepo}`;
+    return `https://api.github.com/search/issues?q=${q}&sort=created&order=desc&per_page=${PER_PAGE}&page=${page}`;
+  }
 
   function relativeTime(dateStr) {
     const now = Date.now();
@@ -118,6 +127,67 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
     pagination.style.display = '';
   }
 
+  function updateFilterButtons() {
+    document.querySelectorAll('.repo-filter-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.repo === (activeRepo || ''));
+    });
+  }
+
+  function renderRepoFilters(items) {
+    const ownSet = new Set(PULLS_OWN_REPOS);
+    const externalRepos = new Map();
+    items.forEach((pr) => {
+      const repo = extractRepo(pr.html_url);
+      const owner = repo.split('/')[0];
+      if (!ownSet.has(repo) && owner !== GITHUB_USERNAME && !externalRepos.has(repo)) {
+        externalRepos.set(repo, `https://github.com/${owner}.png?size=40`);
+      }
+    });
+
+    const container = document.getElementById('repos-filter');
+    container.innerHTML = '';
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'repo-filter-btn active';
+    allBtn.dataset.repo = '';
+    allBtn.textContent = 'All';
+    container.appendChild(allBtn);
+
+    PULLS_OWN_REPOS.forEach((repo) => {
+      const owner = repo.split('/')[0];
+      const btn = document.createElement('button');
+      btn.className = 'repo-filter-btn';
+      btn.dataset.repo = repo;
+      btn.innerHTML = `<img src="https://github.com/${owner}.png?size=40" alt="" width="16" height="16" class="repo-filter-icon" loading="lazy" />${repo}`;
+      container.appendChild(btn);
+    });
+
+    const sorted = [...externalRepos.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    sorted.forEach(([repo, avatarUrl]) => {
+      const btn = document.createElement('button');
+      btn.className = 'repo-filter-btn';
+      btn.dataset.repo = repo;
+      btn.innerHTML = `<img src="${avatarUrl}" alt="" width="16" height="16" class="repo-filter-icon" loading="lazy" />${repo}`;
+      container.appendChild(btn);
+    });
+
+    container.style.display = '';
+  }
+
+  async function fetchRepos() {
+    try {
+      const res = await fetch(`https://api.github.com/search/issues?q=${BASE_QUERY}&per_page=100`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const hiddenSet = new Set(PULLS_HIDDEN_REPOS);
+      const filtered = data.items.filter((pr) => {
+        const repo = extractRepo(pr.html_url);
+        return !hiddenSet.has(repo) && prStatus(pr) !== 'closed';
+      });
+      renderRepoFilters(filtered);
+    } catch {}
+  }
+
   async function fetchPulls(page) {
     currentPage = page || 1;
     const loading = document.getElementById('pulls-loading');
@@ -131,7 +201,7 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
     pagination.style.display = 'none';
 
     try {
-      const res = await fetch(`${BASE_URL}&page=${currentPage}`);
+      const res = await fetch(buildUrl(currentPage));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
@@ -148,7 +218,7 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
       list.style.display = '';
       updatePagination(currentPage, data.total_count);
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (currentPage > 1) window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) {
       console.error('Failed to fetch pulls:', e);
       loading.style.display = 'none';
@@ -157,11 +227,23 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
   }
 
   document.getElementById('retry-btn').addEventListener('click', () => fetchPulls(currentPage));
+
   document.getElementById('pulls-pagination').addEventListener('click', (e) => {
     const btn = e.target.closest('.pagination-btn');
     if (btn) fetchPulls(Number(btn.dataset.page));
   });
+
+  document.getElementById('repos-filter').addEventListener('click', (e) => {
+    const btn = e.target.closest('.repo-filter-btn');
+    if (!btn) return;
+    const repo = btn.dataset.repo;
+    activeRepo = repo || null;
+    updateFilterButtons();
+    fetchPulls(1);
+  });
+
   fetchPulls(1);
+  fetchRepos();
 </script>
 
 <style>
@@ -176,14 +258,51 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
     color: var(--color-heading);
   }
 
-
   .description {
     color: var(--color-text-muted);
-    margin: 0 0 48px 0;
+    margin: 0 0 32px 0;
   }
 
   .since {
     font-size: 14px;
+  }
+
+  /* Repo filter buttons */
+  #repos-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  #repos-filter :global(.repo-filter-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+  }
+
+  #repos-filter :global(.repo-filter-btn:hover) {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  #repos-filter :global(.repo-filter-btn.active) {
+    background: rgba(0, 216, 255, 0.1);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  #repos-filter :global(.repo-filter-icon) {
+    border-radius: 50%;
   }
 
   /* Skeleton */
