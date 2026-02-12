@@ -2,3 +2,4 @@ export const SITE_URL = 'https://sorafujitani.me';
 export const SITE_NAME = 'Sora Fujitani';
 export const GITHUB_USERNAME = 'fs0414';
 export const PULLS_HIDDEN_REPOS: string[] = [];
+export const PULLS_SINCE = '2025-10-04';
