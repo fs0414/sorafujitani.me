@@ -138,7 +138,7 @@ import { GITHUB_USERNAME, PULLS_HIDDEN_REPOS, PULLS_SINCE } from '@lib/constants
       const hiddenSet = new Set(PULLS_HIDDEN_REPOS);
       const items = data.items.filter((pr) => {
         const repo = extractRepo(pr.html_url);
-        return !hiddenSet.has(repo);
+        return !hiddenSet.has(repo) && prStatus(pr) !== 'closed';
       });
 
       list.innerHTML = '';
